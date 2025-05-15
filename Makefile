@@ -16,7 +16,11 @@ up: config
 	cd srcs && docker compose up --build
 
 down:
-	cd srcs && docker compose down --volumes
+	@if [ -f "./srcs/.env" ]; then \
+		cd srcs && docker compose down --volumes; \
+	else \
+		echo "⚠️  .env file not found. Skipping docker compose down."; \
+	fi
 
 start:
 	cd srcs && docker compose start
@@ -31,7 +35,10 @@ clean-images:
 	cd srcs && { imgs=$$(docker images -q); [ -n "$$imgs" ] && docker rmi -f $$imgs || echo "No images to remove."; }
 
 clean-env:
-	@rm -f ./srcs/.env
+	@if [ -f "./srcs/.env" ]; then \
+		echo "Removing ./srcs/.env..."; \
+		rm -f ./srcs/.env; \
+	fi
 
 clean-data:
 	@if [ -d "$$HOME/data/mariadb" ]; then \
